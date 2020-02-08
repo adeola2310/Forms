@@ -1,110 +1,198 @@
 import React from 'react';
 import './App.css';
+import {isOnlyText, isEmailValid, isGreaterThanTwo, isValid, isPassword, confirm, isNumber} from "./validators/helpers";
 
-const regExp = RegExp(
-    /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
-)
-
-const formValid = ({ formErrors, ...rest}) =>{
-  let isValid = false;
-
-  Object.values(formErrors).forEach(val => {
-    if (val.length > 0){
-      isValid = false
-    }
-    else {
-      isValid = true
-    }
-  });
-
-  Object.values(rest).forEach(val =>{
-    if (val === null){
-      isValid = false
-    }
-    else {
-      isValid = true
-    }
-  });
-  return isValid;
-}
 
 class App extends React.Component{
 
   constructor(props) {
     super(props);
+   this.state ={
+     isValid: false,
+     user: {
+       fullName: "",
+       email: "",
+       password:"",
+       confirmPassword: "",
+       date:"",
+       number:"",
+       pin:""
+     },
+     error:{
+       fullName: "",
+       email: "",
+       password: "",
+       confirmPassword: "",
+       date: "",
+       number: "",
+       pin:""
+     }
+   }
 
-    this.state ={
-      fullName:"",
-      email:"",
-      password:"",
-      formErrors:{
-        fullName: '',
-        email: '',
-        password: ''
-      }
-    }
+
   }
   handleSubmit =(e)=>{
     e.preventDefault();
-    if (formValid(this.state)){
-      console.log(this.state)
-    }
-    else {
-      console.log('form is invalid');
-    }
   }
-
-  formValChange = (e) => {
+  handleChange = (e)=>{
     e.preventDefault();
     const { name, value } = e.target;
-    let formErrors = { ...this.state.formErrors };
-
+    this.setState(prevState => ({
+      user:{
+        ...prevState.user,
+        [name]: value
+      }
+    }))
+    this.setState(prevState => ({
+      error: {
+        ...prevState.error,
+        [name]: value
+      }
+    }));
     switch (name) {
-      case "fullName":
-        formErrors.fullName =
-            value.length < 2 ? "At least 4 characaters required" : "";
+      case 'fullName':
+        if ((!isOnlyText(value) && value ) || !isGreaterThanTwo(value)){
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              fullName: 'Name must have more than 2 characters'
+            }
+          }))
+        }
+        else {
+          this.setState(prevState =>({
+            error: {
+              ...prevState.error,
+              fullName:''
+            }
+          }))
+        }
         break;
-      case "email":
-        formErrors.email = regExp.test(value)
-            ? ""
-            : "Email address is invalid";
+      case 'email':
+        if (!isEmailValid(value)){
+         this.setState(prevState => ({
+           error: {
+             ...prevState.error,
+             email: 'email is invalid'
+           }
+         }))
+        }
+        else{
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              email: ''
+            }
+          }))
+        }
         break;
-      case "password":
-        formErrors.password =
-            value.length < 6 ? "Atleast 6 characaters required" : "";
+      case 'number':
+        if (!isNumber(value) && value){
+         this.setState(prevState => ({
+           error: {
+             ...prevState.error,
+             number: 'number is invalid'
+           }
+         }))
+        }
+        else{
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              number: ''
+            }
+          }))
+        }
+        break;
+      case 'password':
+        if (!isPassword(value)){
+         this.setState(prevState => ({
+           error: {
+             ...prevState.error,
+             password: 'password is invalid'
+           }
+         }))
+        }
+        else{
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              password: ''
+            }
+          }))
+        }
+        break;
+      case 'confirmPassword':
+        if (!isPassword(value) !== !confirm(value)){
+         this.setState(prevState => ({
+           error: {
+             ...prevState.error,
+             password: 'password does not match the above'
+           }
+         }))
+        }
+        else{
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              password: ''
+            }
+          }))
+        }
+        break;
+
+      case  'pin':
+        if (!isValid(value) && value){
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              pin: 'pin must be a number and must not be less than or greater than 4'
+            }
+          }))
+        }
+        else{
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              pin: ''
+            }
+          }))
+        }
         break;
       default:
-        break;
     }
 
-    this.setState({
-      formErrors,
-      [name]: value
-    })
-  };
+  }
+
+
+
+
+
+
+
+
 
   render() {
-    const { formErrors } = this.state;
+    const { user, error } = this.state;
     return (
         <div className="wrapper">
           <div className="form-wrapper">
             <div className="details">
               <h2 className="head"> Fill in the Details</h2>
-              <form className="row" onSubmit={this.handleSubmit} noValidate>
+              <form className="row" onSubmit={this.handleSubmit}  noValidate>
                 <div className="column">
                   <div className="input-group">
                     <label htmlFor="FullName">Full Name:</label>
                     <input
                         type="text"
-                        className={formErrors.fullName.length > 0 ? "is-valid form" : "form-control"}
                         placeholder="John Doe"
                         name="fullName"
-                        onChange={this.formValChange}
+                        value={user.fullName}
+                        onChange={this.handleChange}
+                        className={ `${error.fullName}`}
                     />
                   </div>
-                  {formErrors.fullName.length < 2 && (
-                      <span className="text-danger" style={{color:"red"}}>Full name should be more than 2 characters</span>
-                  )}
+                  <span className="error-message">{error.fullName}</span>
 
                   <div className="input-group">
                     <label htmlFor="email">Email:</label>
@@ -112,24 +200,35 @@ class App extends React.Component{
                         type="email"
                         placeholder="JohnDoe@gmail.com"
                         name="email"
-                        onChange={this.formValChange}
+                        className={ `${error.email}`}
+                        onChange={this.handleChange}
                     />
                   </div>
+
+                  <span className="error-message">{error.email}</span>
+
                   <div className="input-group">
                     <label htmlFor="number">Phone Number:</label>
                     <input
                         name="number"
+                         maxLength="11"
+                        value={user.number}
+                        onChange={this.handleChange}
+                        className={`${error.number}`}
                     />
                   </div>
+                  <span className="error-message"> {error.number}</span>
                   <div className="input-group">
                     <label htmlFor="Password">Password:</label>
                     <input
                         type="password"
-                        placeholder="John Doe"
                         name="password"
-                        onChange={this.formValChange}
+                        value={user.password}
+                        onChange={this.handleChange}
+                        className={`${error.password}`}
                     />
                   </div>
+                  <span className="error-message">{error.password}</span>
                   <div className="input-group">
                     <label htmlFor="password">Confirm Password:</label>
                     <input
@@ -150,19 +249,24 @@ class App extends React.Component{
                     <input
                         type="text"
                         name="date"
+                        pattern="[0-9]{4}-[0-9]{2}"
                         placeholder="MM/YY"
                     />
                   </div>
                   <div className="input-group">
                     <label htmlFor="pin">PIN:</label>
                     <input
-                        type="text"
+                        type="password"
                         name="pin"
-                        id=""
+                        maxLength="4"
+                        value={user.pin}
+                        className={ `${error.pin}`}
+                        onChange={this.handleChange}
                     />
                   </div>
+                  <span className="error-message">{error.pin}</span>
                   <div className="row">
-                    <button id="submit" className="btn">Submit </button>
+                    <button id="submit" className="btn" disabled={!this.isValid}>Submit </button>
                   </div>
                 </div>
               </form>

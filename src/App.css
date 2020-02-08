@@ -62,7 +62,10 @@ input{
   padding: 10px 25px;
 }
 
-
+.error-message{
+  color: red;
+  margin: auto;
+}
 
 
 
