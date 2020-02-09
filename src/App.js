@@ -7,8 +7,8 @@ import {isOnlyText,
   isPassword,
   confirmPassword,
   isNumber,
-    formatCardNumber,
-  isDate} from "./validators/helpers";
+    formatCardNumber
+  } from "./validators/helpers";
 
 
 class App extends React.Component{
@@ -133,22 +133,37 @@ class App extends React.Component{
         }
         break;
       case 'date':
-        if (!isDate(value) && value){
-         this.setState(prevState => ({
-           error: {
-             ...prevState.error,
-             date: 'date must be in MM/YY format'
-           }
-         }))
-        }
-        else{
-          this.setState(prevState => ({
-            error: {
-              ...prevState.error,
-              date: ''
-            }
-          }))
-        }
+        let date = document.getElementById('date');
+      function checkValue(str, max) {
+        if (str.charAt(0) !== '0' || str === '00') {
+          let num = parseInt(str);
+          if (isNaN(num) || num <= 0 || num > max) num = 1;
+          str = num > parseInt(max.toString().charAt(0)) && num.toString().length == 1 ? '0' + num : num.toString();
+        };
+        return str;
+      };
+
+        date.addEventListener('keydown', function(e) {
+          this.type = 'text';
+          let input = this.value;
+          let key = e.keyCode || e.charCode;
+
+          if (key == 8 || key == 46)    // here's where it checks if backspace or delete is being pressed
+            return false;
+
+          if (/\D\/$/.test(input)) input = input.substr(0, input.length - 1);
+          let values = input.split('/').map(function(v) {
+            return v.replace(/\D/g, '')
+          });
+          if (values[0]) values[0] = checkValue(values[0], 12);
+          // if (values[1]) values[1] = checkValue(values[1], 31);
+          let output = values.map(function(v, i) {
+            return v.length == 2 && i < 2 ? v + '/' : v;
+          });
+          this.value = output.join('').substr(0, 4);
+        });
+
+
         break;
       case 'password':
         if (value && !isPassword(value)){
@@ -305,9 +320,10 @@ class App extends React.Component{
                     <label htmlFor="date">Date:</label>
                     <input
                         name="date"
+                        id="date"
+                        type="text"
                         value={user.date}
-                        maxLength="5"
-                        onChange={this.handleChange}
+                          onChange={this.handleChange}
                         className={`${error.date}`}
                         placeholder="MM/YY"
                     />

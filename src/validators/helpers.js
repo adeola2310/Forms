@@ -29,10 +29,13 @@ export const isValid = (pin) =>{
     return regExp.test(Number(pin)) && pin;
 }
 
-export const isDate = (date) =>{
-    let regExp = /^(0[1-9]|1[012])\/\d{2}$/;
-    return regExp.test(String(date)) && date;
-}
+
+
+
+// export const isDate = (date) =>{
+//     let regExp = /^(0[1-9]|1[012])\/\d{2}$/;
+//     return regExp.test(String(date)) && date;
+// }
 
 export const formatCardNumber = value => {
     const regex = /^(\d{0,4})(\d{0,4})(\d{0,4})(\d{0,4})$/g
