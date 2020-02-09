@@ -1,6 +1,14 @@
 import React from 'react';
 import './App.css';
-import {isOnlyText, isEmailValid, isGreaterThanTwo, isValid, isPassword, confirmPassword, isNumber, isDate} from "./validators/helpers";
+import {isOnlyText,
+  isEmailValid,
+  isGreaterThanTwo,
+  isValid,
+  isPassword,
+  confirmPassword,
+  isNumber,
+    formatCardNumber,
+  isDate} from "./validators/helpers";
 
 
 class App extends React.Component{
@@ -16,6 +24,7 @@ class App extends React.Component{
        confirmPassword: "",
        date:"",
        number:"",
+       cardNumber:"",
        pin:""
      },
      error:{
@@ -25,6 +34,7 @@ class App extends React.Component{
        confirmPassword: "",
        date: "",
        number: "",
+       cardNumber: "",
        pin:""
      }
    }
@@ -100,6 +110,24 @@ class App extends React.Component{
             error: {
               ...prevState.error,
               number: ''
+            }
+          }))
+        }
+        break;
+      case 'cardNumber':
+        if ( value && !formatCardNumber(value)){
+         this.setState(prevState => ({
+           error: {
+             ...prevState.error,
+             cardNumber: 'card number is invalid'
+           }
+         }))
+        }
+        else{
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              cardNumber: ''
             }
           }))
         }
@@ -232,7 +260,7 @@ class App extends React.Component{
                     <input
                         name="number"
                         type="number"
-                        maxLength="11"
+                        maxLength="10"
                         value={user.number}
                         onChange={this.handleChange}
                         className={`${error.number}`}
@@ -264,18 +292,21 @@ class App extends React.Component{
                   <div className="input-group">
                     <label htmlFor="cardNumber">Card Number:</label>
                     <input
-                        type="text"
+                        type="number"
+                        value={user.cardNumber}
+                        onChange={this.handleChange}
+                        className={`${error.cardNumber}`}
                         name="cardNumber"
                         placeholder="XXXX XXXX XXXX XXXX"
                     />
                   </div>
+                  <span className="error-message">{error.cardNumber}</span>
                   <div className="input-group">
                     <label htmlFor="date">Date:</label>
                     <input
-                        type="number"
                         name="date"
                         value={user.date}
-                        maxLength="4"
+                        maxLength="5"
                         onChange={this.handleChange}
                         className={`${error.date}`}
                         placeholder="MM/YY"
