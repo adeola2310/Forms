@@ -12,12 +12,11 @@ export const isGreaterThanTwo = (str) =>{
     return str.length >= 2;
 }
 export const isPassword = (password) => {
-    let regExp = /^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{6}$/;
-    return regExp.test(String(password)) && password;
+    let regExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/
+    return regExp.test(String(password));
 };
-export const confirm = (password) => {
-    let regExp = /^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{6}$/;
-    return regExp.test(String(password)) && password;
+export const confirmPassword = (password, confirmPassword) => {
+    return password === confirmPassword;
 };
 
 export const isNumber = (number) =>{
@@ -28,4 +27,9 @@ export const isNumber = (number) =>{
 export const isValid = (pin) =>{
     let regExp = /^\d{4}$/;
     return regExp.test(Number(pin)) && pin;
+}
+
+export const isDate = (date) =>{
+    let regExp = /^(0[1-9]|1[012])\/\d{2}$/;
+    return regExp.test(String(date)) && date;
 }

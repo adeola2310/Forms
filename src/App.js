@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import {isOnlyText, isEmailValid, isGreaterThanTwo, isValid, isPassword, confirm, isNumber} from "./validators/helpers";
+import {isOnlyText, isEmailValid, isGreaterThanTwo, isValid, isPassword, confirmPassword, isNumber, isDate} from "./validators/helpers";
 
 
 class App extends React.Component{
@@ -104,8 +104,26 @@ class App extends React.Component{
           }))
         }
         break;
+      case 'date':
+        if (!isDate(value) && value){
+         this.setState(prevState => ({
+           error: {
+             ...prevState.error,
+             date: 'date must be in MM/YY format'
+           }
+         }))
+        }
+        else{
+          this.setState(prevState => ({
+            error: {
+              ...prevState.error,
+              date: ''
+            }
+          }))
+        }
+        break;
       case 'password':
-        if (!isPassword(value)){
+        if (value && !isPassword(value)){
          this.setState(prevState => ({
            error: {
              ...prevState.error,
@@ -123,11 +141,13 @@ class App extends React.Component{
         }
         break;
       case 'confirmPassword':
-        if (!isPassword(value) !== !confirm(value)){
+        console.log("Password", this.state.user.password);
+        console.log("value", value);
+        if (!isPassword(value) || !confirmPassword(this.state.user.password, value)){
          this.setState(prevState => ({
            error: {
              ...prevState.error,
-             password: 'password does not match the above'
+             confirmPassword: 'password does not match the above'
            }
          }))
         }
@@ -135,7 +155,7 @@ class App extends React.Component{
           this.setState(prevState => ({
             error: {
               ...prevState.error,
-              password: ''
+              confirmPassword: ''
             }
           }))
         }
@@ -211,7 +231,8 @@ class App extends React.Component{
                     <label htmlFor="number">Phone Number:</label>
                     <input
                         name="number"
-                         maxLength="11"
+                        type="number"
+                        maxLength="11"
                         value={user.number}
                         onChange={this.handleChange}
                         className={`${error.number}`}
@@ -230,12 +251,16 @@ class App extends React.Component{
                   </div>
                   <span className="error-message">{error.password}</span>
                   <div className="input-group">
-                    <label htmlFor="password">Confirm Password:</label>
+                    <label htmlFor="confirmPassword">Confirm Password:</label>
                     <input
                         type="password"
-                        name="password"
+                        name="confirmPassword"
+                        value={user.confirmPassword}
+                        onChange={this.handleChange}
+                        className={`${error.confirmPassword}`}
                     />
                   </div>
+                  <span className="error-message">{error.confirmPassword}</span>
                   <div className="input-group">
                     <label htmlFor="cardNumber">Card Number:</label>
                     <input
@@ -247,12 +272,16 @@ class App extends React.Component{
                   <div className="input-group">
                     <label htmlFor="date">Date:</label>
                     <input
-                        type="text"
+                        type="number"
                         name="date"
-                        pattern="[0-9]{4}-[0-9]{2}"
+                        value={user.date}
+                        maxLength="4"
+                        onChange={this.handleChange}
+                        className={`${error.date}`}
                         placeholder="MM/YY"
                     />
                   </div>
+                  <span className="error-message">{error.password}</span>
                   <div className="input-group">
                     <label htmlFor="pin">PIN:</label>
                     <input
