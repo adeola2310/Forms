@@ -1,4 +1,8 @@
 .dashboard{
-    background-color: aqua;
+    background-color: hsl(0, 100%, 74%);
     color: white;
+    max-height: 100%;
+    height: 100vh;
 }
+
+
