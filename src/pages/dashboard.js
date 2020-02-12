@@ -5,7 +5,7 @@ class Dashboard extends Component {
     render() {
         return (
             <div className="dashboard">
-                <div className="text">
+                <div className="dashboard-text">
                     <h1> Welcome to Softcom!</h1>
                 </div>
             </div>

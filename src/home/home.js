@@ -22,7 +22,7 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isValid: false,
+            isSubmit: false,
             user: {
                 fullName: "",
                 email: "",
@@ -33,22 +33,15 @@ class Home extends React.Component {
                 cardNumber: "",
                 pin: ""
             },
-            error: {
-                fullName: "",
-                email: "",
-                password: "",
-                confirmPassword: "",
-                date: "",
-                number: "",
-                cardNumber: "",
-                pin: ""
-            }
+            error: {}
         }
+        this.handleSubmit = this.handleSubmit.bind(this)
 
 
     }
 
     handleSubmit = (e) => {
+        console.log('yeah')
         e.preventDefault();
         this.props.history.push('/dashboard');
     }
@@ -253,18 +246,20 @@ class Home extends React.Component {
                 break;
             default:
         }
-        if(!this.state.error.fullName &&
-            !this.state.error.email &&
-            !this.state.error.password &&
-            !this.state.error.confirmPassword &&
-            !this.state.error.date &&
-            !this.state.error.number &&
-            !this.state.error.cardNumber &&
-            !this.state.error.pin &&
-            this.state.user.fullName && this.state.user.email && this.state.user.cardNumber && this.state.user.pin && this.state.user.password && this.state.user.confirmPassword && this.state.user.date && this.state.user.number){
-            this.setState({isValid: true});
-        }else{
-            this.setState({isValid: false});
+
+        if(!this.state.error.fullName ||
+            !this.state.error.email ||
+            !this.state.error.password ||
+            !this.state.error.confirmPassword ||
+            !this.state.error.date ||
+            !this.state.error.number ||
+            !this.state.error.cardNumber ||
+            !this.state.error.pin
+            ){
+            this.setState({isSubmit: true});
+        }
+        else{
+            this.setState({isSubmit: false});
         }
     }
 
@@ -276,7 +271,7 @@ class Home extends React.Component {
                 <div className="all-container">
                     <div id="Column">
                         <h2>Fill the Card Details</h2>
-                        <form id="signupSection" onSubmit={this.handleSubmit.bind(this)}>
+                        <form id="signupSection" onSubmit={this.handleSubmit}>
 
                             <div id="fullName" className="inputDiv">
                                 <input id="fullName"
@@ -365,7 +360,7 @@ class Home extends React.Component {
                             <span className="error-message">{error.pin}</span>
 
                             <button type="submit" id="submit-button"
-                                // disabled={!this.state.isValid}
+                                disabled={!this.state.isSubmit}
                             >
                                 SUBMIT
                             </button>
