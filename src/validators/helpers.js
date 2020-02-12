@@ -26,7 +26,7 @@ export const isNumber = (number) => {
 
 export const isValid = (pin) => {
     let regExp = /^\d{4}$/;
-    return regExp.test(Number(pin)) && pin;
+    return regExp.test(Number(pin));
 }
 
 

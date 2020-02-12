@@ -1,14 +1,19 @@
 import React from 'react';
 import './home.css';
 import {
+    withRouter
+} from 'react-router-dom';
+import {
     isOnlyText,
     isEmailValid,
     isGreaterThanTwo,
     isValid,
     isPassword,
+    isCardNumber,
     confirmPassword,
     isNumber,
     isOnlyNumber,
+
 } from "./../validators/helpers";
 
 
@@ -64,23 +69,21 @@ class Home extends React.Component {
         }));
         switch (name) {
             case 'fullName':
-                if ((!isOnlyText(value) && value ) || !isGreaterThanTwo(value)){
+                if ((!isOnlyText(value) && value) || !isGreaterThanTwo(value)) {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
                             fullName: 'Name must have more than 2 characters'
                         }
                     }))
-                }
-                else {
-                    this.setState(prevState =>({
+                } else {
+                    this.setState(prevState => ({
                         error: {
                             ...prevState.error,
-                            fullName:''
+                            fullName: ''
                         }
                     }))
                 }
-
                 break;
             case 'email':
                 if (!isEmailValid(value)) {
@@ -137,7 +140,7 @@ class Home extends React.Component {
                 }
 
                 let matches = v.match(/\d{4,16}/g);
-                let match = ((matches && matches[0]) || '');
+                let match = matches && matches[0] || '';
                 let parts = []
                 for (let i = 0, len = match.length; i < len; i += 4) {
                     parts.push(match.substring(i, i + 4))
@@ -166,7 +169,7 @@ class Home extends React.Component {
                 if (str.charAt(0) !== '0' || str === '00') {
                     let num = parseInt(str);
                     if (isNaN(num) || num <= 0 || num > max) num = 1;
-                    str = num > parseInt(max.toString().charAt(0)) && num.toString().length === 1 ? '0' + num : num.toString();
+                    str = num > parseInt(max.toString().charAt(0)) && num.toString().length == 1 ? '0' + num : num.toString();
                 }
                 ;
                 return str;
@@ -177,7 +180,7 @@ class Home extends React.Component {
                     let input = this.value;
                     let key = e.keyCode || e.charCode;
 
-                    if (key === 8 || key === 46)    // here's where it checks if backspace or delete is being pressed
+                    if (key == 8 || key == 46)    // here's where it checks if backspace or delete is being pressed
                         return false;
 
                     if (/\D\/$/.test(input)) input = input.substr(0, input.length - 1);
@@ -187,10 +190,12 @@ class Home extends React.Component {
                     if (values[0]) values[0] = checkValue(values[0], 12);
                     // if (values[1]) values[1] = checkValue(values[1], 31);
                     let output = values.map(function (v, i) {
-                        return v.length === 2 && i < 2 ? v + '/' : v;
+                        return v.length == 2 && i < 2 ? v + '/' : v;
                     });
                     this.value = output.join('').substr(0, 4);
                 });
+
+
                 break;
             case 'password':
                 if (value && !isPassword(value)) {
@@ -210,11 +215,13 @@ class Home extends React.Component {
                 }
                 break;
             case 'confirmPassword':
+                console.log("Password", this.state.user.password);
+                console.log("value", value);
                 if (!isPassword(value) || !confirmPassword(this.state.user.password, value)) {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
-                            confirmPassword: 'password does not match the one above'
+                            confirmPassword: 'password does not match the above'
                         }
                     }))
                 } else {
@@ -226,6 +233,7 @@ class Home extends React.Component {
                     }))
                 }
                 break;
+
             case  'pin':
                 if (!isValid(value) && value) {
                     this.setState(prevState => ({
@@ -245,7 +253,7 @@ class Home extends React.Component {
                 break;
             default:
         }
-        if (!this.state.error.fullName &&
+        if(!this.state.error.fullName &&
             !this.state.error.email &&
             !this.state.error.password &&
             !this.state.error.confirmPassword &&
@@ -253,10 +261,9 @@ class Home extends React.Component {
             !this.state.error.number &&
             !this.state.error.cardNumber &&
             !this.state.error.pin &&
-            this.state.user.fullName && this.state.user.email && this.state.user.cardNumber && this.state.user.pin && this.state.user.password && this.state.user.confirmPassword && this.state.user.date && this.state.user.number) {
+            this.state.user.fullName && this.state.user.email && this.state.user.cardNumber && this.state.user.pin && this.state.user.password && this.state.user.confirmPassword && this.state.user.date && this.state.user.number){
             this.setState({isValid: true});
-        } else {
-
+        }else{
             this.setState({isValid: false});
         }
     }
@@ -270,20 +277,19 @@ class Home extends React.Component {
                     <div id="Column">
                         <h2>Fill the Card Details</h2>
                         <form id="signupSection" onSubmit={this.handleSubmit.bind(this)}>
-                            <label>Name:</label>
+
                             <div id="fullName" className="inputDiv">
                                 <input id="fullName"
                                        className={` ${error.fullName}`}
                                        type="text"
                                        name="fullName"
                                        value={user.fullName}
-                                       placeholder="John Doe"
+                                       placeholder="Full Name"
                                        onChange={this.handleChange}
                                 />
                             </div>
                             <span className="error-message">{error.fullName}</span>
                             <div id="email" className="inputDiv">
-                                <label>Email:</label>
                                 <input
                                     type="email"
                                     placeholder="JohnDoe@gmail.com"
@@ -295,7 +301,6 @@ class Home extends React.Component {
                             </div>
                             <span className="error-message">{error.email}</span>
                             <div id="phone" className="inputDiv">
-                                <label>Phone Number:</label>
                                 <input id="phone"
                                        className={`${error.number}`}
                                        type="number"
@@ -307,7 +312,6 @@ class Home extends React.Component {
                             </div>
                             <span className="error-message">{error.number}</span>
                             <div id="password" className="inputDiv">
-                                <label>Password:</label>
                                 <input id="password"
                                        className={`${error.password}`}
                                        type="password"
@@ -319,7 +323,6 @@ class Home extends React.Component {
                             </div>
                             <span className="error-message">{error.password}</span>
                             <div id="confirmPassword" className="inputDiv">
-                                <label>Confirm Password:</label>
                                 <input id="confirmPassword"
                                        className={`${error.confirmPassword}`}
                                        type="password"
@@ -331,7 +334,6 @@ class Home extends React.Component {
                             </div>
                             <span className="error-message">{error.confirmPassword}</span>
                             <div className="inputDiv">
-                                <label>Expiring Date:</label>
                                 <input id="date"
                                        className={`${error.date}`}
                                        type="number"
@@ -341,7 +343,6 @@ class Home extends React.Component {
                                        placeholder="MM/YY"/>
                             </div>
                             <div className="inputDiv">
-                                <label>Card Number:</label>
                                 <input id="cc"
                                        className={`${error.cardNumber}`}
                                        type="text"
@@ -352,7 +353,6 @@ class Home extends React.Component {
                             </div>
                             <span className="error-message">{error.cardNumber}</span>
                             <div id="pin" className="inputDiv">
-                                <label>Pin Number:</label>
                                 <input
                                     className={`${error.pin}`}
                                     maxLength="4"
@@ -365,7 +365,7 @@ class Home extends React.Component {
                             <span className="error-message">{error.pin}</span>
 
                             <button type="submit" id="submit-button"
-                                    disabled={!this.state.isValid}
+                                // disabled={!this.state.isValid}
                             >
                                 SUBMIT
                             </button>
