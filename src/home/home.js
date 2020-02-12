@@ -124,14 +124,14 @@ class Home extends React.Component {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
-                            cardNumber: 'card number must be a 16 digits number'
+                            cardNumber: 'error'
                         }
                     }))
                 } else {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
-                            cardNumber: ''
+                            cardNumber: ' card number must be a 16 digits number'
                         }
                     }))
                 }
