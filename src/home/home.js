@@ -44,7 +44,7 @@ class Home extends React.Component {
                 pin: ""
             }
         };
-        console.log("initial state", this.state)
+        // console.log("initial state", this.state)
 
         this.handleSubmit = this.handleSubmit.bind(this)
     }
