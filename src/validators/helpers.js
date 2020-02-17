@@ -3,8 +3,8 @@ export const isEmailValid = (email) => {
     return regExp.test(String(email).toLowerCase()) && email;
 };
 
-export const isOnlyText = (text) => {
-    let regExp = /^[A-Za-z ]+$/;
+export const isFullName = (text) => {
+    let regExp = /^[a-zA-Z]+ [a-zA-Z]+$/;
     return regExp.test(String(text)) && text;
 };
 
@@ -20,7 +20,7 @@ export const confirmPassword = (password, confirmPassword) => {
 };
 
 export const isNumber = (number) => {
-    let regExp = /^[0]\d{10}$/;
+    let regExp = /^0((8[0|1])|([7|9]0))\d{8}$/;
     return regExp.test(String(number)) && number;
 }
 

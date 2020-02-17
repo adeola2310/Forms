@@ -4,7 +4,7 @@ import {
     withRouter
 } from 'react-router-dom';
 import {
-    isOnlyText,
+    isFullName,
     isEmailValid,
     isGreaterThanTwo,
     isValid,
@@ -33,7 +33,8 @@ class Home extends React.Component {
                 cardNumber: "",
                 pin: ""
             },
-            error: {}
+            error: [],
+            errorcheck: null,
         }
         this.handleSubmit = this.handleSubmit.bind(this)
 
@@ -41,7 +42,6 @@ class Home extends React.Component {
     }
 
     handleSubmit = (e) => {
-        console.log('yeah')
         e.preventDefault();
         this.props.history.push('/dashboard');
     }
@@ -53,7 +53,8 @@ class Home extends React.Component {
                 ...prevState.user,
                 [name]: value
             }
-        }))
+        }));
+
         this.setState(prevState => ({
             error: {
                 ...prevState.error,
@@ -62,20 +63,22 @@ class Home extends React.Component {
         }));
         switch (name) {
             case 'fullName':
-                if ((!isOnlyText(value) && value) || !isGreaterThanTwo(value)) {
+                if ((!isFullName(value) && value) || !isGreaterThanTwo(value)) {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
-                            fullName: 'Name must have more than 2 characters'
+                            fullName: 'Name must have more than 2 characters with both First and Last name'
                         }
-                    }))
+                    }));
                 } else {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
                             fullName: ''
                         }
-                    }))
+
+                    }));
+
                 }
                 break;
             case 'email':
@@ -86,6 +89,8 @@ class Home extends React.Component {
                             email: 'email is invalid'
                         }
                     }))
+                    this.setState({ errorcheck: true})
+
                 } else {
                     this.setState(prevState => ({
                         error: {
@@ -93,10 +98,21 @@ class Home extends React.Component {
                             email: ''
                         }
                     }))
+                    this.setState({ errorcheck: false})
+
                 }
                 break;
             case 'number':
-                if (!isNumber(value) && value) {
+                let numberValue = value.substr(0, 11);
+
+                this.setState(prevState => ({
+                    user: {
+                        ...prevState.user,
+                        number: numberValue
+                    }
+                }));
+
+                if (!isNumber(numberValue) && numberValue) {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
@@ -109,20 +125,21 @@ class Home extends React.Component {
                             ...prevState.error,
                             number: ''
                         }
-                    }))
+                    }));
+
                 }
                 break;
             case 'cardNumber':
                 let v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
 
                 if (!isOnlyNumber(v) || v === '') {
-                    console.log('here')
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
                             cardNumber: 'error'
                         }
                     }))
+
                 } else {
                     this.setState(prevState => ({
                         error: {
@@ -130,6 +147,7 @@ class Home extends React.Component {
                             cardNumber: ''
                         }
                     }))
+
                 }
 
                 let matches = v.match(/\d{4,16}/g);
@@ -145,6 +163,7 @@ class Home extends React.Component {
                             cardNumber: parts.join(' ')
                         }
                     }))
+
                 } else {
                     this.setState(prevState => ({
                         user: {
@@ -152,6 +171,8 @@ class Home extends React.Component {
                             cardNumber: value
                         }
                     }))
+                    this.setState({ errorcheck: false})
+
                 }
 
                 break;
@@ -208,8 +229,6 @@ class Home extends React.Component {
                 }
                 break;
             case 'confirmPassword':
-                console.log("Password", this.state.user.password);
-                console.log("value", value);
                 if (!isPassword(value) || !confirmPassword(this.state.user.password, value)) {
                     this.setState(prevState => ({
                         error: {
@@ -247,14 +266,22 @@ class Home extends React.Component {
             default:
         }
 
-        if(!this.state.error.fullName ||
-            !this.state.error.email ||
-            !this.state.error.password ||
-            !this.state.error.confirmPassword ||
-            !this.state.error.date ||
-            !this.state.error.number ||
-            !this.state.error.cardNumber ||
-            !this.state.error.pin
+        if(!this.state.error.fullName &&
+            !this.state.error.email &&
+            !this.state.error.password &&
+            !this.state.error.confirmPassword &&
+            !this.state.error.date &&
+            !this.state.error.number &&
+            !this.state.error.cardNumber &&
+            !this.state.error.pin &&
+            this.state.user.fullName &&
+            this.state.user.email &&
+            this.state.user.password &&
+            this.state.user.confirmPassword &&
+            this.state.user.date &&
+            this.state.user.number &&
+            this.state.user.cardNumber &&
+            this.state.user.pin
             ){
             this.setState({isSubmit: true});
         }
@@ -281,6 +308,7 @@ class Home extends React.Component {
                                        value={user.fullName}
                                        placeholder="Full Name"
                                        onChange={this.handleChange}
+
                                 />
                             </div>
                             <span className="error-message">{error.fullName}</span>
@@ -303,6 +331,7 @@ class Home extends React.Component {
                                        value={user.number}
                                        name="number"
                                        onChange={this.handleChange}
+                                       maxLength="11"
                                 />
                             </div>
                             <span className="error-message">{error.number}</span>
