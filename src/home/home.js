@@ -33,34 +33,46 @@ class Home extends React.Component {
                 cardNumber: "",
                 pin: ""
             },
-            error: [],
-            errorcheck: null,
-        }
+            error: {
+                fullName: "",
+                email: "",
+                password: "",
+                confirmPassword: "",
+                date: "",
+                number: "",
+                cardNumber: "",
+                pin: ""
+            }
+        };
+        console.log("initial state", this.state)
+
         this.handleSubmit = this.handleSubmit.bind(this)
-
-
     }
 
     handleSubmit = (e) => {
         e.preventDefault();
         this.props.history.push('/dashboard');
-    }
-    handleChange = (e) => {
+    };
+
+    handleChange = async (e) => {
         e.preventDefault();
         const {name, value} = e.target;
-        this.setState(prevState => ({
+
+        await this.setState(prevState => ({
             user: {
                 ...prevState.user,
                 [name]: value
             }
         }));
 
-        this.setState(prevState => ({
-            error: {
-                ...prevState.error,
-                [name]: value
-            }
-        }));
+
+        // this.setState(prevState => ({
+        //     error: {
+        //         ...prevState.error,
+        //         [name]: value
+        //     }
+        // }));
+
         switch (name) {
             case 'fullName':
                 if ((!isFullName(value) && value) || !isGreaterThanTwo(value)) {
@@ -89,7 +101,6 @@ class Home extends React.Component {
                             email: 'email is invalid'
                         }
                     }))
-                    this.setState({ errorcheck: true})
 
                 } else {
                     this.setState(prevState => ({
@@ -98,7 +109,6 @@ class Home extends React.Component {
                             email: ''
                         }
                     }))
-                    this.setState({ errorcheck: false})
 
                 }
                 break;
@@ -126,7 +136,6 @@ class Home extends React.Component {
                             number: ''
                         }
                     }));
-
                 }
                 break;
             case 'cardNumber':
@@ -146,8 +155,7 @@ class Home extends React.Component {
                             ...prevState.error,
                             cardNumber: ''
                         }
-                    }))
-
+                    }));
                 }
 
                 let matches = v.match(/\d{4,16}/g);
@@ -162,8 +170,7 @@ class Home extends React.Component {
                             ...prevState.user,
                             cardNumber: parts.join(' ')
                         }
-                    }))
-
+                    }));
                 } else {
                     this.setState(prevState => ({
                         user: {
@@ -171,23 +178,19 @@ class Home extends React.Component {
                             cardNumber: value
                         }
                     }))
-                    this.setState({ errorcheck: false})
-
                 }
-
                 break;
             case 'date':
                 let date = document.getElementById('date');
 
-            function checkValue(str, max) {
-                if (str.charAt(0) !== '0' || str === '00') {
-                    let num = parseInt(str);
-                    if (isNaN(num) || num <= 0 || num > max) num = 1;
-                    str = num > parseInt(max.toString().charAt(0)) && num.toString().length == 1 ? '0' + num : num.toString();
+                function checkValue(str, max) {
+                    if (str.charAt(0) !== '0' || str === '00') {
+                        let num = parseInt(str);
+                        if (isNaN(num) || num <= 0 || num > max) num = 1;
+                        str = num > parseInt(max.toString().charAt(0)) && num.toString().length == 1 ? '0' + num : num.toString();
+                    }
+                    return str;
                 }
-                ;
-                return str;
-            };
 
                 date.addEventListener('keydown', function (e) {
                     this.type = 'text';
@@ -208,7 +211,6 @@ class Home extends React.Component {
                     });
                     this.value = output.join('').substr(0, 4);
                 });
-
 
                 break;
             case 'password':
@@ -247,7 +249,7 @@ class Home extends React.Component {
                 break;
 
             case  'pin':
-                if (!isValid(value) && value) {
+                if (!isValid(value)) {
                     this.setState(prevState => ({
                         error: {
                             ...prevState.error,
@@ -266,7 +268,7 @@ class Home extends React.Component {
             default:
         }
 
-        if(!this.state.error.fullName &&
+        if (!this.state.error.fullName &&
             !this.state.error.email &&
             !this.state.error.password &&
             !this.state.error.confirmPassword &&
@@ -282,10 +284,9 @@ class Home extends React.Component {
             this.state.user.number &&
             this.state.user.cardNumber &&
             this.state.user.pin
-            ){
+        ) {
             this.setState({isSubmit: true});
-        }
-        else{
+        } else {
             this.setState({isSubmit: false});
         }
     }
@@ -302,7 +303,6 @@ class Home extends React.Component {
 
                             <div id="fullName" className="inputDiv">
                                 <input id="fullName"
-                                       className={` ${error.fullName}`}
                                        type="text"
                                        name="fullName"
                                        value={user.fullName}
@@ -318,14 +318,12 @@ class Home extends React.Component {
                                     placeholder="JohnDoe@gmail.com"
                                     name="email"
                                     value={user.email}
-                                    className={`${error.email}`}
                                     onChange={this.handleChange}
                                 />
                             </div>
                             <span className="error-message">{error.email}</span>
                             <div id="phone" className="inputDiv">
                                 <input id="phone"
-                                       className={`${error.number}`}
                                        type="number"
                                        placeholder="e.g 08131902727"
                                        value={user.number}
@@ -337,7 +335,6 @@ class Home extends React.Component {
                             <span className="error-message">{error.number}</span>
                             <div id="password" className="inputDiv">
                                 <input id="password"
-                                       className={`${error.password}`}
                                        type="password"
                                        placeholder="Password"
                                        value={user.password}
@@ -348,7 +345,6 @@ class Home extends React.Component {
                             <span className="error-message">{error.password}</span>
                             <div id="confirmPassword" className="inputDiv">
                                 <input id="confirmPassword"
-                                       className={`${error.confirmPassword}`}
                                        type="password"
                                        value={user.confirmPassword}
                                        name="confirmPassword"
@@ -359,7 +355,6 @@ class Home extends React.Component {
                             <span className="error-message">{error.confirmPassword}</span>
                             <div className="inputDiv">
                                 <input id="date"
-                                       className={`${error.date}`}
                                        type="number"
                                        name="date"
                                        value={user.date}
@@ -368,7 +363,6 @@ class Home extends React.Component {
                             </div>
                             <div className="inputDiv">
                                 <input id="cc"
-                                       className={`${error.cardNumber}`}
                                        type="text"
                                        name="cardNumber"
                                        value={user.cardNumber}
@@ -378,18 +372,18 @@ class Home extends React.Component {
                             <span className="error-message">{error.cardNumber}</span>
                             <div id="pin" className="inputDiv">
                                 <input
-                                    className={`${error.pin}`}
                                     maxLength="4"
                                     type="password"
                                     name="pin"
                                     onChange={this.handleChange}
                                     placeholder="PIN"
+                                    value={user.pin}
                                 />
                             </div>
                             <span className="error-message">{error.pin}</span>
 
                             <button type="submit" id="submit-button"
-                                disabled={!this.state.isSubmit}
+                                    disabled={!this.state.isSubmit}
                             >
                                 SUBMIT
                             </button>
